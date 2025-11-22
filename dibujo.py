@@ -3,6 +3,7 @@ import numpy as np
 from cinematica_inversa import cinematica_inversa
 import matplotlib.pyplot as plt
 from animacion import animar_brazo
+from serialize import serialize_angulos
 
 
 class Draw:
@@ -62,10 +63,10 @@ class Draw:
                 # Convertir de radianes a grados y ajustar para servos
                 x_deg = int(np.clip(np.round(np.degrees(a1) + 90), 0, 180))
                 y_deg = int(np.clip(np.round(np.degrees(a2)), 0, 180))
-                packet = f"<{x_deg:.2f},{y_deg:.2f}>\n"
-                self.ser.write(packet.encode("ascii"))
+                packet = serialize_angulos(x_deg, y_deg)
+                self.ser.write(packet)
                 self.ser.flush()
-                print(f"→ Enviado ({i+1}/{len(q1)}): {packet.strip()}")
+                print(f"→ Enviado ({i+1}/{len(q1)}): {packet.decode().strip()}")
                 time.sleep(5)
         self.anim = animar_brazo(self.x_path, self.y_path, self.l1, self.l2)
 

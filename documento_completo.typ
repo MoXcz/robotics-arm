@@ -13,7 +13,7 @@
   \
   #text(size: 14pt, weight: "bold")[Avances Proyecto] \
   \
-  #text(size: 12pt)[CHIHUAHUA, CHIHUAHUA A 18 DE OCTUBRE DE 2025.] \
+  #text(size: 12pt)[CHIHUAHUA, CHIHUAHUA A 22 DE NOVIEMBRE DE 2025.] \
   #text(size: 12pt)[MANUEL ALBERTO CHAVEZ SALCIDO] \
   \
   #text(size: 16pt, weight: "bold")[ROBOTICS]
@@ -83,13 +83,95 @@ El control de un desplazamiento lineal requiere conversión de pasos en distanci
 
 = Cinemática Inversa
 
-== Cálculo del ángulo q₂
+La cinemática es la rama de la robótica que estudia la relación entre los movimientos
+de las articulaciones del robot y la posición u orientación del efector final, sin
+considerar fuerzas ni dinámicas. Su propósito es describir “dónde está” cada parte
+del robot en función de cómo están configuradas sus articulaciones.
 
-Para obtener el ángulo $q_2$:
+En un robot manipulador, la cinemática se divide en dos problemas fundamentales:
 
-=== Aplicación de la Ley de Cosenos
+- *Cinemática Directa*: determina la posición del efector final a partir de los ángulos de las articulaciones.
+- *Cinemática Inversa*: calcula los ángulos de las articulaciones necesarios para que el efector final alcance una posición deseada.
 
-De la ley de cosenos $c^2 = a^2 + b^2 - 2a b cos(C)$, aplicada al triángulo formado por los eslabones:
+Ambos problemas se encuentran estrechamente relacionados. La cinemática directa
+describe cómo se mueve el robot, y la inversa utiliza esa descripción para resolver el
+movimiento deseado.
+
+== Cinemática Directa
+
+La cinemática directa permite obtener la posición del efector final partiendo de los
+ángulos medidos o asignados a las articulaciones. En otras palabras:
+“Si conozco los ángulos del robot, ¿dónde estará la punta?”
+Para el caso del brazo robótico con configuración RR (Rotacional–Rotacional)
+empleado en este proyecto, el sistema opera en un plano y consta de dos eslabones
+de longitudes $l_1$ y $l_2$, y dos articulaciones rotacionales con ángulos $q_1$ y $q_2$.
+
+=== Metodología para obtener las ecuaciones
+
+La cinemática directa se obtiene analizando la geometría del robot paso a paso:
+
+==== Representación del sistema
+El robot posee:
+- Primer eslabón de longitud $l_1$, rotado un ángulo $q_1$ respecto al eje horizontal.
+- Segundo eslabón de longitud $l_2$, cuyo ángulo absoluto es $q_1$ + $q_2$ porque parte desde el extremo del primer eslabón.
+
+Esto se puede representar de manera visual de la siguiente manera:
+
+#align(center, image("./robot.jpeg", height: 40%, width: 40%, fit: "contain"))
+
+==== Cálculo de la posición de la articulación intermedia
+El extremo del primer eslabón (la articulación que une ambos eslabones) tiene
+coordenadas:
+
+- $𝑥_1 = 𝑙_1 cos(𝑞_1)$
+- $𝑦_1 = 𝑙_1 sin(𝑞_1)$
+
+Estas ecuaciones provienen directamente de proyectar el primer eslabón sobre los
+ejes $x$ y $y$ usando funciones trigonométricas.
+
+==== Contribución del segundo eslabón
+El segundo eslabón parte del punto $(x_1, y_1)$ y está orientado a un ángulo total de:
+
+#align(center, $𝑞_1 + 𝑞_2$)
+
+Por tanto, sus componentes en $x$ y $y$ son:
+
+- $𝑥_2 = 𝑙_2 cos (𝑞_1 + 𝑞_2)$
+- $𝑦_2 = 𝑙_2 cos (𝑞_1 + 𝑞_2)$
+
+==== Posición final del efector
+La posición final se obtiene sumando las contribuciones de ambos eslabones:
+
+- $𝑥 = 𝑥_1 + 𝑥_2 = 𝑙_1 cos(𝑞_1) + 𝑙_2 cos (𝑞_1 + 𝑞_2)$
+- $𝑦 = 𝑦_1 + 𝑦_2 = 𝑙_1 sin(𝑞_1) + 𝑙_2 sin (𝑞_1 + 𝑞_2)$
+- $𝜃 = 𝑞_1 + 𝑞_2$
+
+Estas ecuaciones representan la cinemática directa del robot RR.
+
+== Cinemática Inversa
+La cinemática inversa permite determinar los ángulos $𝑞_1$ y $𝑞_2$ necesarios para que el
+punto final del robot alcance una posición objetivo $(x, y)$. A diferencia de la cinemática
+directa —donde se calcula la posición a partir de los ángulos— aquí se parte de la
+posición deseada y se resuelven los ángulos que producen dicha ubicación.
+
+El método utilizado se basa en analizar la geometría del triángulo formado por los dos
+eslabones y el punto final, aplicando trigonometría y la ley de cosenos para obtener
+cada ángulo paso a paso.
+
+=== Cálculo del ángulo $q_2$
+Para obtener el ángulo $𝑞_2$, se analiza primero el triángulo formado por:
+- el origen,
+- la articulación intermedia,
+- y el punto final $(x, y)$
+
+En este triángulo aparecen las longitudes $𝑙_1$ y $𝑙_2$, junto con la distancia del origen al
+punto deseado $sqrt(𝑥_2 + 𝑦_2)$. Esto permite aplicar directamente la ley de cosenos para
+relacionar estas longitudes con el ángulo buscado.
+
+==== Aplicación de la Ley de Cosenos
+Aquí se aplica la ley de cosenos:
+
+#align(center, $c^2 = a^2 + b^2 - 2a b cos(C)$)
 
 #align(center)[
   $(sqrt(x^2 + y^2))^2 = l_1^2 + l_2^2 - 2 l_1 l_2 cos(180° - q_2)$
@@ -100,23 +182,38 @@ Donde:
 - $l_1$ y $l_2$ son las longitudes de los eslabones
 - $180° - q_2$ es el ángulo interno del triángulo
 
-=== Desarrollo algebraico
+El ángulo interno del triángulo opuesto a $𝑙_2$ corresponde a $180° − 𝑞_2$. Esto permite
+expresar la relación entre los lados y así conectar la posición deseada con la
+articulación del segundo eslabón.
+
+==== Desarrollo algebraico
+En esta parte se despeja la ecuación de la ley de cosenos usando las longitudes
+reales del robot. El objetivo de estos pasos es aislar la expresión donde aparezca el
+coseno del ángulo $𝑞_2$.
+
+Este desarrollo no cambia la estructura de la ecuación, solo la reorganiza para dejar
+clara la dependencia entre $x$, $y$, $𝑙_1$, $𝑙_2$ y $𝑞_2$
 
 #align(center)[
   $x^2 + y^2 = l_1^2 + l_2^2 - 2 l_1 l_2 cos(180° - q_2)$ \
   $x^2 + y^2 - l_1^2 - l_2^2 = -2 l_1 l_2 cos(180° - q_2)$
 ]
 
-=== Aplicación de identidades trigonométricas
+==== Aplicación de identidades trigonométricas
+Para simplificar la expresión obtenida, se utiliza la identidad:
 
-Usando la identidad $cos(180° - θ) = -cos(θ)$:
+#align(center, $cos(180° - θ) = -cos(θ)$)
+
+Esto permite expresar el resultado directamente en función de $cos (𝑞_2)$ lo cual facilita
+el cálculo del valor final.
 
 #align(center)[
   $x^2 + y^2 - l_1^2 - l_2^2 = -2 l_1 l_2 (-cos(q_2))$ \
   $x^2 + y^2 - l_1^2 - l_2^2 = 2 l_1 l_2 cos(q_2)$
 ]
 
-=== Resolución para q₂
+==== Resolución para $q_2$
+Después de sustituir y simplificar, se obtiene:
 
 #align(center)[
   $cos(q_2) = frac(x^2 + y^2 - l_1^2 - l_2^2, 2 l_1 l_2)$
@@ -128,17 +225,28 @@ Finalmente:
   $q_2 = cos^(-1) [frac(x^2 + y^2 - l_1^2 - l_2^2, 2 l_1 l_2)]$
 ]
 
-== Cálculo del ángulo q₁
+Este es el ángulo del “codo”, determinado exclusivamente por la posición objetivo del
+efector final y las longitudes del robot.
 
-Para obtener el ángulo $q_1$:
+Aquí termina el cálculo del segundo ángulo, que es esencial antes de pasar al cálculo
+de $𝑞_1$.
 
-=== Ecuaciones de cinemática
+=== Cálculo del ángulo $q_1$
+
+Una vez conocido $𝑞_2$, se procede a calcular $𝑞_1$. Este ángulo depende de dos
+componentes:
+- La dirección general hacia el punto $(x,y)$
+- La corrección necesaria por el aporte del segundo eslabón (dependiendo de $𝑞_2$).
+La combinación de ambos elementos determina cómo debe orientarse el primer
+eslabón para que el segundo pueda completar el movimiento.
+
+==== Ecuaciones de cinemática
 
 Definiendo $alpha = tan^-1(frac(B, A)) = tan^-1(frac(l_2 sin(q_2), l_1 + l_2 cos(q_2)))$, donde:
 - $A$ representa la proyección efectiva del primer eslabón más la componente horizontal del segundo
 - $B$ representa la componente vertical del segundo eslabón
 
-=== Resolución final
+==== Resolución final
 
 Por lo tanto:
 
@@ -158,12 +266,16 @@ Sustituyendo el valor de $alpha$:
   $q_1 = tan^(-1)(frac(y, x)) - tan^(-1)(frac(l_2 sin(q_2), l_1 + l_2 cos(q_2)))$
 ]
 
-
 == Coordenadas de los puntos
+Una vez obtenidos los ángulos, es posible reconstruir las posiciones de cada
+articulación mediante trigonometría directa. Esta parte confirma geométricamente
+que los valores calculados permiten alcanzar el punto objetivo y sirve también para
+animación o simulación del robot.
 
 === Posición de la articulación intermedia
-
-Una vez calculados los ángulos $q_1$ y $q_2$, podemos determinar las coordenadas de todos los puntos del sistema:
+Esta sección calcula la ubicación del punto donde se unen los dos eslabones.
+Se aplican las funciones coseno y seno al ángulo $𝑞_1$, tal como se hace en la
+cinemática directa.
 
 ==== Articulación intermedia (punto de unión entre eslabones)
 
@@ -186,17 +298,20 @@ Las componentes del segundo eslabón en el sistema de coordenadas global son:
 Donde $(x_2, y_2)$ son las componentes del segundo eslabón.
 
 === Posición del punto final
-
-El punto final del brazo robótico se obtiene sumando las contribuciones de ambos eslabones:
+Finalmente, la posición del efector final se obtiene sumando las componentes del
+primer y segundo eslabón.
+Este paso funciona como verificación de que los ángulos calculados permiten llegar
+al punto deseado.
 
 #align(center)[
   $x = x_1 + x_2 = l_1 cos(q_1) + l_2 cos(q_1 + q_2)$ \
   $y = y_1 + y_2 = l_1 sin(q_1) + l_2 sin(q_1 + q_2)$
 ]
 
-=== Verificación geométrica
-
-Para verificar que los cálculos son correctos, se debe cumplir:
+==== Verificación geométrica
+Esta ecuación reúsa la ley de cosenos para confirmar que las coordenadas obtenidas
+son coherentes con la geometría del sistema. Si la igualdad se cumple, la solución
+hallada para $𝑞_1$ y $𝑞_2$ es consistente.
 
 #align(center)[
   $sqrt(x^2 + y^2) = sqrt(l_1^2 + l_2^2 + 2 l_1 l_2 cos(q_2))$
@@ -204,7 +319,22 @@ Para verificar que los cálculos son correctos, se debe cumplir:
 
 Esta relación se deriva de la ley de cosenos aplicada al triángulo formado por los eslabones.
 
-= Ecuaciones Parametricas
+== Ecuaciones Parametricas
+Las ecuaciones paramétricas permiten describir una figura en el plano utilizando
+parámetro $t$, que normalmente varía en el intervalo de $0$ a $2 pi$. En lugar de expresar
+una curva mediante una sola ecuación, se definen dos funciones:
+#align(center, [$𝑥 = 𝑥(𝑡)$ \ $𝑦 = 𝑦(𝑡)$])
+
+De esta manera, al recorrer valores de t, se generan los pares $(x,y)$ que pertenecen a la
+figura.
+
+En el contexto del proyecto, estas ecuaciones proporcionan los puntos que el efector
+final debe seguir para dibujar trayectorias como círculos o cardioides. Cada punto
+generado por las ecuaciones paramétricas se envía posteriormente al bloque de
+cinemática inversa, que calcula los ángulos necesarios de las articulaciones para
+que el robot pueda moverse correctamente a lo largo de la curva. Así, las ecuaciones
+paramétricas describen la forma de la figura, mientras que la cinemática inversa
+permite que el robot la reproduzca físicamente.
 
 == Definiciones
 
@@ -213,6 +343,9 @@ Esta relación se deriva de la ley de cosenos aplicada al triángulo formado por
 - $t$. Parametro con rango de $0$ a $2 pi$
 
 == Circulo
+Estas ecuaciones generan los puntos de un círculo conforme el parámetro $t$ recorre el
+intervalo de $0$ a $2 pi$. El valor de $r$ determina el tamaño del círculo y $(𝑐_1, 𝑐_2)$ representan
+el centro de la figura.
 
 - x: $c_1 r cos(t)$
 - y: $c_2 + r sin(t))$
