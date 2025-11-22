@@ -44,10 +44,10 @@ def run_gui():
         column=0, row=1, pady=5
     )
     ttk.Button(frame, text="Cardioide", width=20, command=run_cardioide).grid(
-        column=0, row=3, pady=5
+        column=0, row=2, pady=5
     )
     ttk.Button(frame, text="Dibujar", width=20, command=run_draw).grid(
-        column=0, row=4, pady=5
+        column=0, row=3, pady=5
     )
 
     root.mainloop()
