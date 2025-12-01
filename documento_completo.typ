@@ -19,6 +19,16 @@
   #text(size: 16pt, weight: "bold")[ROBOTICS]
 ]
 
+= ¿Qué es un robot?
+
+Un robot se describe técnicamente como un manipulador reprogramable con varios grados de libertad, capaz de mover piezas, herramientas u otros dispositivos siguiendo trayectorias variables programadas para realizar tareas diversas.
+
+No se trata simplemente de una “máquina” sino de un sistema interdisciplinario: mecánica, control, informática, sensores, actuadores, etc.
+
+En tiempos contemporaneos, los robots han evolucionado mucho desde su origen en la industria automotriz, para abarcar aplicaciones en entornos no estructurados, robótica de servicio, teleoperación, robótica médica, exploración, etc.
+
+Por lo tanto, un robot puede verse como un sistema mecánico + sensorial + computacional + de control, que recibe órdenes (programadas o autónomas) y realiza acciones físicas en su entorno.
+
 = Eleccion de Proyecto
 
 == RR con GUI
@@ -40,32 +50,32 @@ A recomendacion de nuestro tutor decidimos utilizar un protocolo simple de datos
 
 == Configuraciones
 
-== RRR (Rotacional–Rotacional–Rotacional) Antropomórfico
+=== RRR (Rotacional–Rotacional–Rotacional) Antropomórfico
 Tres articulaciones rotacionales. Es un brazo antropomórfico que se asemeja al movimiento de un brazo humano.
 
-== RRP (Rotacional–Rotacional–Prismático) Scara
+=== RRP (Rotacional–Rotacional–Prismático) Scara
 Dos articulaciones rotacionales más un eje prismático. Permite rotar y además extender/retraer una parte del brazo.
 
-== RR (Rotacional–Rotacional)
+=== RR (Rotacional–Rotacional)
 Dos rotaciones, parecido a un brazo plano de dos grados de libertad.
 
-== RP (Rotacional–Prismático)
+=== RP (Rotacional–Prismático)
 Una rotación y un prismático. Es más limitado debido a la falta de movilidad que se puede presentar con un RR.
 
 == Materiales Necesarios
 
 Para cualquiera de estas configuraciones:
 
-1. *Arduino UNO*. Controlador principal.
+1. *Arduino*. Controlador principal (en nuestro caso optamos por un Arduino Mini).
 2. *Servomotores*:
    - RRR → 3 servos rotacionales
    - RRP → 2 servos rotacionales + 1 actuador lineal o servo con mecanismo lineal
-   - RR → 2 servos rotacionales
+   - *RR → 2 servos rotacionales* (utilizamos servomotores SG-90)
    - RP → 1 servo rotacional + 1 actuador lineal
-3. *Fuente de alimentación*. Una batería capaz de alimentar varios servos.
-4. *Estructura o base*. Uso de palillos de madera (buscando la posibilidad de utilizar una impresora 3D).
+3. *Fuente de alimentación*. Una fuente de poder capaz de alimentar varios servos (utilizamos la HW-131).
+4. *Estructura o base*. Uso de palillos de madera y silicón.
 5. *Plataforma de dibujo*. Una base plana con un sujetador de lápiz al extremo del efector final.
-6. *Cables, protoboard y componentes electrónicos básicos*. Resistencias, capacitores para estabilizar, etc.
+6. *Cables, protoboard y componentes electrónicos básicos*. Jumpers Macho-Macho y Macho-Hembra.
 
 == Figuras a Realizar
 
@@ -80,6 +90,16 @@ Un servomotor da accesibilidad a la rotación, para realizar un movimiento linea
 
 === Control
 El control de un desplazamiento lineal requiere conversión de pasos en distancia real, mientras que los rotacionales están calibrados en grados.
+
+== Circuito
+
+#align(center, image("./circuito.png", height: 30%, width: 60%, fit: "contain"))
+
+En nuestro robot, el circuito original presentaba una configuración ligeramente distinta. Sin embargo, debido a las limitaciones del software utilizado para su modelado, optamos por representarlo de la manera mostrada.
+
+En la implementación real, en lugar de conectar directamente servomotores al Arduino, empleamos una fuente de poder HW-131, la cual suministraba energía a los servomotores a través de un protoboard, garantizando así una distribución de la alimentación.
+
+#pagebreak()
 
 = Cinemática Inversa
 
